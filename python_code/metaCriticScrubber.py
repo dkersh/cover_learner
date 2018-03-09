@@ -106,6 +106,15 @@ def getScore(r):
 
     return score
 
+def getGenre(r):
+    regGenre = re.compile('<span class=\"label\">Genre\(s\)\: </span><span class="data" itemprop="genre">.*</span>')
+    genre = re.findall(regGenre,r.text)
+    genre = ''.join(map(str,genre))
+    genre = re.sub('<span class=\"label\">Genre\(s\)\: </span><span class="data" itemprop="genre">','',genre)
+    genre = re.sub('</span>.*','',genre)
+
+    return genre
+
 # with a requests.get object, obtain the cover link from a metacritic game website.
 def getCover(r):
     regCover = re.compile('og:image\".*>')
@@ -120,7 +129,7 @@ def getCover(r):
 def downloadCover(url,i,score):
     rpic = requests.get(url, stream=True)
     if rpic.status_code == 200:
-        with open('metaCovers/' + 'game_' + str(i) + '_' + str(score) + '.jpg','wb') as f:
+        with open('metaCoversTest/' + 'game_' + str(i) + '_' + str(score) + '.jpg','wb') as f:
             rpic.raw.decode_content = True
             shutil.copyfileobj(rpic.raw,f)
 
@@ -128,22 +137,32 @@ def downloadCover(url,i,score):
 def collect(gamelist):
     filename = open(gamelist)
     game_list = [i for i in filename.readlines()]
+    score_file = open('metaCoversTest/scores.txt','w')
+    genre_file = open('metaCoversTest/genre.txt','w')
+    all_file = open('metaCoversTest/all.txt','w')
 
     try:
-        for i in range(1527,len(game_list)):
+        for i in range(0,len(game_list)):
             progress = str(i+1) + '/' + str(len(game_list)) + ' - '
             URL = 'http://www.metacritic.com' + game_list[i]
             r = requests.get(URL,headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'})
 
             score = getScore(r)
             cover = getCover(r)
+            genre = getGenre(r)
 
-            print(progress + score + ' ' + game_list[i])
+            score_file.write(score + '\n')
+            genre_file.write(genre + '\n')
+            all_file.write(game_list[i] + ',' + score + ',' + genre)
+
+            print(progress + game_list[i].replace('\n','') + ',' + score + ',' + genre)
             score = round(int(score)/10)
             downloadCover(cover,i,score)
             
     finally:
-        text_file.close()
+        score_file.close()
+        genre_file.close()
+        all_file.close()
 
 #makeGameList('ps2','ps2Good.txt')
 #makeGameList('ps3','ps3Good.txt')
