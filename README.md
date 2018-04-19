@@ -7,4 +7,4 @@ My current version utilising data augmentation is capable of classifying with ab
 
 ![alt text](https://github.com/dkersh/cover_learner/blob/master/examples.png)
 
-More work needs to be done to understand what kinds of features the CNN is picking out however.
+More work needs to be done to understand what kinds of features the CNN is picking out however. (Duplicate images are most likely due to games being multi-platform. I'll have to rectify some code to fix this).
