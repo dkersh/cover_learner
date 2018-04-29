@@ -13,7 +13,7 @@ import cv2
 from sklearn.model_selection import train_test_split
 from keras.utils import to_categorical
 
-filelist = glob.glob('/home/xendev/david_stuff/ImageClassification/images_new/*.jpg')
+filelist = glob.glob('home/*.jpg')
 
 def get_im(path):
 	img = cv2.imread(path)
